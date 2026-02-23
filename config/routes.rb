@@ -5,8 +5,9 @@ Rails.application.routes.draw do
   post "login", to: "sessions#create"
   delete "logout", to: "sessions#destroy"
 
-  resources :users, only: [ :new, :create ]
+  get "profile", to: "users#profile", as: :profile
 
+  resources :users, only: [ :new, :create, :destroy ]
   resources :orders, only: [ :create, :index, :show ] do
     member do
       get :invoice
@@ -20,8 +21,6 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#index"
-    get "dashboard/index"
-
     resources :products
     resources :orders, only: [ :index, :show, :update ]
   end

@@ -1,74 +1,46 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <%= link_to "ShopApp", root_path, class: "navbar-brand" %>
+
+    <%= link_to "Products", root_path, class: "navbar-brand" %>
 
     <ul class="navbar-nav ms-auto">
 
       <% if logged_in? %>
 
-        <!-- Welcome -->
+        <!-- Hello -->
         <li class="nav-item">
           <span class="nav-link text-light">
             Hello, <%= current_user.name %>
           </span>
         </li>
 
-        <% if current_user.admin? %>
+        <% unless current_user.admin? %>
 
-          <!-- Admin Only -->
+          <!-- Cart -->
           <li class="nav-item">
-            <%= link_to "Admin Dashboard",
-                        admin_root_path,
+            <%= link_to "Cart (#{current_user.cart&.cart_items&.count || 0})",
+                        cart_path,
                         class: "nav-link" %>
           </li>
 
-        <% else %>
-
-          <!-- Customer Only -->
-
-          <!-- Wishlist with Badge -->
+          <!-- Wishlist -->
           <li class="nav-item">
-            <%= link_to wishlists_path, class: "nav-link position-relative" do %>
-              Wishlist
-              <% if current_user.wishlists.count > 0 %>
-                <span class="badge bg-danger ms-1">
-                  <%= current_user.wishlists.count %>
-                </span>
-              <% end %>
-            <% end %>
-          </li>
-
-          <!-- Cart with Badge -->
-          <li class="nav-item">
-            <%= link_to cart_path, class: "nav-link position-relative" do %>
-              Cart
-              <% if current_user.cart.cart_items.count > 0 %>
-                <span class="badge bg-success ms-1">
-                  <%= current_user.cart.cart_items.count %>
-                </span>
-              <% end %>
-            <% end %>
-          </li>
-
-          <li class="nav-item">
-            <%= link_to "My Orders",
-                        orders_path,
+            <%= link_to "Wishlist (#{current_user.wishlists.count})",
+                        wishlists_path,
                         class: "nav-link" %>
           </li>
 
         <% end %>
 
-        <!-- Logout -->
+        <!-- Profile -->
         <li class="nav-item">
-          <%= link_to "Logout",
-                      logout_path,
-                      data: { turbo_method: :delete },
+          <%= link_to "My Profile",
+                      profile_path,
                       class: "nav-link" %>
         </li>
 
       <% else %>
 
-        <!-- Guest -->
         <li class="nav-item">
           <%= link_to "Login", login_path, class: "nav-link" %>
         </li>

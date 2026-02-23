@@ -1,0 +1,35 @@
+<div class="container mt-4">
+  <h2>My Profile</h2>
+
+  <div class="card p-4 shadow-sm">
+
+    <p><strong>Name:</strong> <%= @user.name %></p>
+    <p><strong>Email:</strong> <%= @user.email %></p>
+
+    <hr>
+
+    <div class="d-grid gap-2 col-6">
+
+      <%= link_to "My Orders",
+                  orders_path,
+                  class: "btn btn-primary" %>
+
+      <%= link_to "Wishlist",
+                  wishlists_path,
+                  class: "btn btn-outline-danger" %>
+
+      <%= link_to "Logout",
+                  logout_path,
+                  data: { turbo_method: :delete },
+                  class: "btn btn-warning" %>
+
+      <%= button_to "Delete My Account",
+                    user_path(@user),
+                    method: :delete,
+                    data: { confirm: "Are you sure?" },
+                    class: "btn btn-danger" %>
+
+    </div>
+
+  </div>
+</div>
