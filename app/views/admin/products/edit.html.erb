@@ -27,6 +27,16 @@
     <%= f.file_field :image %>
   </div>
 
+  <div class="mb-3">
+    <%= f.label :category_id, "Category" %>
+    <%= f.collection_select :category_id,
+                            Category.all,
+                            :id,
+                            :name,
+                            { prompt: "Select Category" },
+                            { class: "form-select" } %>
+  </div>
+
   <br>
   <%= f.submit "Update Product", class: "btn btn-success" %>
 

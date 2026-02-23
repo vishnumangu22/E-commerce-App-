@@ -18,4 +18,8 @@
 
 <h3>Total Paid: ₹ <%= @order.total_amount %></h3>
 
+<%= link_to "Download Invoice",
+            invoice_order_path(@order),
+            class: "btn btn-success" %>
+
 <%= link_to "Back to Orders", orders_path %>

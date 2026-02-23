@@ -2,7 +2,11 @@ class ProductsController < ApplicationController
   skip_before_action :require_user, only: [ :index, :show ]
 
   def index
-    @products = Product.all
+    if params[:category_id].present?
+      @products = Product.where(category_id: params[:category_id])
+    else
+      @products = Product.all
+    end
   end
 
   def show

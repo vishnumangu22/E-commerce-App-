@@ -3,7 +3,11 @@ module Admin
     before_action :require_admin
 
     def index
-      @products = Product.all
+      if params[:category_id]
+        @products = Product.where(category_id: params[:category_id])
+      else
+        @products = Product.all
+      end
     end
 
     def new
@@ -39,9 +43,8 @@ module Admin
     end
 
     private
-
     def product_params
-      params.require(:product).permit(:name, :description, :price, :stock, :image)
+      params.require(:product).permit(:name, :description, :price, :stock, :image, :category_id)
     end
   end
 end

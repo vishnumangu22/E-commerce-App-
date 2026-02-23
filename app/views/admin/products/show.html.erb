@@ -2,12 +2,23 @@
 
 <p><%= @product.description %></p>
 
+<p>
+  <strong>Category:</strong>
+  <%= @product.category&.name || "Not Assigned" %>
+</p>
+
 <p><strong>Price:</strong> ₹ <%= @product.price %></p>
-<p><strong>Stock:</strong> <%= @product.stock %></p>
+
+<p>
+  <strong>Stock:</strong>
+  <% if @product.stock > 0 %>
+    <span style="color:green;"><%= @product.stock %> Available</span>
+  <% else %>
+    <span style="color:red;">Out of Stock</span>
+  <% end %>
+</p>
 
 <hr>
-
-
 
 <% if !logged_in? %>
 

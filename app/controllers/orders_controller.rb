@@ -9,7 +9,6 @@ class OrdersController < ApplicationController
     @order = current_user.orders.find(params[:id])
   end
 
-
   def create
     cart = current_user.cart
 
@@ -19,14 +18,13 @@ class OrdersController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      cart.cart_items.each do |item|
-        if item.quantity > item.product.stock
-          raise ActiveRecord::Rollback, "Insufficient stock"
-        end
+      # Calculate subtotal properly
+      subtotal = cart.cart_items.sum do |item|
+        item.product.price * item.quantity
       end
 
       order = current_user.orders.create!(
-        total_amount: cart.total_price,
+        total_amount: subtotal,
         status: :pending
       )
 
@@ -49,9 +47,52 @@ class OrdersController < ApplicationController
   end
 
 
+  def invoice
+    @order = current_user.orders.find(params[:id])
+
+    pdf = Prawn::Document.new
+
+    # Header
+    pdf.text "ShopApp Invoice", size: 24, style: :bold
+    pdf.move_down 20
+
+    pdf.text "Order ID: #{@order.id}"
+    pdf.text "Date: #{@order.created_at.strftime('%d %B %Y')}"
+    pdf.text "Customer: #{current_user.name}"
+    pdf.move_down 20
+
+    # Table Header
+    table_data = [ [ "Product", "Quantity", "Unit Price", "Subtotal" ] ]
+
+    @order.order_items.each do |item|
+      subtotal = item.price * item.quantity
+
+      table_data << [
+        item.product.name,
+        item.quantity,
+        "Rs. #{item.price}",
+        "Rs. #{subtotal}"
+      ]
+    end
+
+    pdf.table(table_data, header: true)
+    pdf.move_down 20
+
+    pdf.text "Total Amount: Rs. #{@order.total_amount}",
+             size: 16,
+             style: :bold
+
+    send_data pdf.render,
+              filename: "invoice_order_#{@order.id}.pdf",
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
   private
 
   def ensure_customer
-    redirect_to root_path, alert: "Admins cannot place orders" if current_user.admin?
+    redirect_to root_path,
+                alert: "Admins cannot place orders",
+                status: :see_other if current_user.admin?
   end
 end

@@ -1,13 +1,36 @@
 <h2>Products</h2>
 
+<!-- Category Filter -->
+<div style="margin-bottom:20px;">
+  <%= form_with url: root_path, method: :get, local: true do %>
+    <%= select_tag :category_id,
+                   options_from_collection_for_select(Category.all,
+                                                     :id,
+                                                     :name,
+                                                     params[:category_id]),
+                   prompt: "Filter by Category",
+                   onchange: "this.form.submit();" %>
+  <% end %>
+</div>
+
+<hr>
+
 <% @products.each do |product| %>
   <div style="margin-bottom:20px;">
+
     <h3>
       <%= link_to product.name, product_path(product) %>
     </h3>
 
     <p><%= product.description %></p>
-    <p>₹ <%= product.price %></p>
+
+    <p>
+      <strong>Category:</strong>
+      <%= product.category&.name || "Not Assigned" %>
+    </p>
+
+    <p><strong>Price:</strong> ₹ <%= product.price %></p>
+
   </div>
   <hr>
 <% end %>
