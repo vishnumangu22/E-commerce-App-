@@ -1,0 +1,110 @@
+<div class="container mt-4">
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <h2 class="mb-3"><%= @product.name %></h2>
+
+      <div class="row">
+
+        <!-- Product Image -->
+        <div class="col-md-5 text-center">
+          <% if @product.image.attached? %>
+            <%= image_tag @product.image,
+                          class: "img-fluid rounded",
+                          style: "max-height: 350px;" %>
+          <% else %>
+            <div class="text-muted">
+              No Image Available
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-7">
+
+          <p class="mb-2">
+            <strong>Price:</strong>
+            <span class="fs-5">₹ <%= @product.price %></span>
+          </p>
+
+          <p class="mb-2">
+            <strong>Stock:</strong>
+            <% if @product.stock > 0 %>
+              <span class="badge bg-success">
+                <%= @product.stock %> Available
+              </span>
+            <% else %>
+              <span class="badge bg-danger">
+                Out of Stock
+              </span>
+            <% end %>
+          </p>
+
+          <p class="mt-3">
+            <%= @product.description %>
+          </p>
+
+          <hr>
+
+          <!-- Purchase / Wishlist Logic -->
+          <% if !logged_in? %>
+
+            <div class="alert alert-info">
+              Please login to purchase or add to wishlist.
+            </div>
+
+          <% elsif current_user.admin? %>
+
+            <div class="alert alert-warning">
+              Admins cannot purchase or use wishlist.
+            </div>
+
+          <% else %>
+
+            <% if @product.stock > 0 %>
+              <%= button_to "Add to Cart",
+                            cart_items_path(product_id: @product.id),
+                            method: :post,
+                            class: "btn btn-primary btn-lg me-2" %>
+            <% else %>
+              <div class="alert alert-danger">
+                Out of Stock
+              </div>
+            <% end %>
+
+            <!-- Wishlist Toggle -->
+            <% wishlist_item = current_user.wishlists.find_by(product_id: @product.id) %>
+
+            <% if wishlist_item %>
+
+              <%= button_to "💔 Remove from Wishlist",
+                            wishlist_path(wishlist_item),
+                            method: :delete,
+                            class: "btn btn-outline-danger" %>
+
+            <% else %>
+
+              <%= button_to "❤️ Add to Wishlist",
+                            wishlists_path(product_id: @product.id),
+                            method: :post,
+                            class: "btn btn-outline-danger" %>
+
+            <% end %>
+
+          <% end %>
+
+          <br><br>
+
+          <%= link_to "Back to Products",
+                      root_path,
+                      class: "btn btn-outline-secondary" %>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

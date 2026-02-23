@@ -1,0 +1,13 @@
+<h2>Products</h2>
+
+<% @products.each do |product| %>
+  <div style="margin-bottom:20px;">
+    <h3>
+      <%= link_to product.name, product_path(product) %>
+    </h3>
+
+    <p><%= product.description %></p>
+    <p>₹ <%= product.price %></p>
+  </div>
+  <hr>
+<% end %>

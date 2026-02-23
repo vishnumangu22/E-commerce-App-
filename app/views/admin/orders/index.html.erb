@@ -1,0 +1,18 @@
+<h2>All Orders</h2>
+
+<% @orders.each do |order| %>
+  <div style="margin-bottom:20px;">
+    <strong>Order ID:</strong> <%= order.id %><br>
+    <strong>User:</strong> <%= order.user.name %><br>
+    <strong>Total:</strong> ₹ <%= order.total_amount %><br>
+    <strong>Status:</strong> <%= order.status.capitalize %><br>
+
+    <%= form_with model: [:admin, order], local: true do |f| %>
+      <%= f.select :status, Order.statuses.keys.map { |s| [s.capitalize, s] } %>
+      <%= f.submit "Update" %>
+    <% end %>
+
+    <%= link_to "View Details", admin_order_path(order) %>
+  </div>
+  <hr>
+<% end %>

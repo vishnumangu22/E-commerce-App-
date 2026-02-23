@@ -1,0 +1,102 @@
+<div class="container mt-4">
+
+  <h2 class="mb-4">Your Cart</h2>
+
+  <% if @cart.cart_items.any? %>
+
+    <% @cart.cart_items.each do |item| %>
+
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+
+          <div class="row align-items-center">
+
+            <!-- Product Image -->
+            <div class="col-md-2 text-center">
+              <% if item.product.image.attached? %>
+                <%= image_tag item.product.image,
+                              class: "img-fluid rounded",
+                              style: "max-height: 80px;" %>
+              <% else %>
+                <div class="text-muted small">
+                  No Image
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Product Name -->
+            <div class="col-md-3">
+              <h5 class="card-title mb-0">
+                <%= item.product.name %>
+              </h5>
+            </div>
+
+            <!-- Quantity Controls -->
+            <div class="col-md-3 text-center">
+
+              <div class="d-flex justify-content-center align-items-center gap-2">
+
+                <!-- Decrease -->
+                <%= button_to "-",
+                              cart_item_path(item, type: "decrease"),
+                              method: :patch,
+                              class: "btn btn-sm btn-outline-danger" %>
+
+                <span class="fw-bold"><%= item.quantity %></span>
+
+                <!-- Increase -->
+                <%= button_to "+",
+                              cart_item_path(item, type: "increase"),
+                              method: :patch,
+                              class: "btn btn-sm btn-outline-success" %>
+
+              </div>
+
+            </div>
+
+            <!-- Price + Remove -->
+            <div class="col-md-4 text-end">
+
+              <p class="mb-2">
+                <strong>₹ <%= item.product.price * item.quantity %></strong>
+              </p>
+
+              <%= button_to "Remove",
+                            cart_item_path(item),
+                            method: :delete,
+                            class: "btn btn-sm btn-outline-danger" %>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    <% end %>
+
+    <!-- Cart Total -->
+    <div class="card shadow-sm">
+      <div class="card-body d-flex justify-content-between align-items-center">
+
+        <h4 class="mb-0">
+          Total: ₹ <%= @cart.total_price %>
+        </h4>
+
+        <%= button_to "Checkout",
+                      orders_path,
+                      method: :post,
+                      class: "btn btn-success btn-lg" %>
+
+      </div>
+    </div>
+
+  <% else %>
+
+    <div class="alert alert-info">
+      Your cart is empty.
+    </div>
+
+  <% end %>
+
+</div>

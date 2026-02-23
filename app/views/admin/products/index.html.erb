@@ -1,0 +1,77 @@
+<div class="container mt-4">
+
+  <h2 class="mb-4">Manage Products</h2>
+
+  <%= link_to "New Product",
+              new_admin_product_path,
+              class: "btn btn-primary mb-3" %>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <table class="table table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @products.each do |product| %>
+            <tr>
+
+              <!-- Image Thumbnail -->
+              <td>
+                <% if product.image.attached? %>
+                  <%= image_tag product.image,
+                                class: "img-thumbnail",
+                                style: "height: 60px;" %>
+                <% else %>
+                  <span class="text-muted small">No Image</span>
+                <% end %>
+              </td>
+
+              <!-- Name -->
+              <td><strong><%= product.name %></strong></td>
+
+              <!-- Price -->
+              <td>₹ <%= product.price %></td>
+
+              <!-- Stock -->
+              <td>
+                <% if product.stock > 0 %>
+                  <span class="badge bg-success">
+                    <%= product.stock %>
+                  </span>
+                <% else %>
+                  <span class="badge bg-danger">
+                    Out of Stock
+                  </span>
+                <% end %>
+              </td>
+
+              <!-- Actions -->
+              <td>
+                <%= link_to "Edit",
+                            edit_admin_product_path(product),
+                            class: "btn btn-sm btn-warning" %>
+
+                <%= link_to "Delete",
+                            admin_product_path(product),
+                            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                            class: "btn btn-sm btn-danger" %>
+              </td>
+
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>

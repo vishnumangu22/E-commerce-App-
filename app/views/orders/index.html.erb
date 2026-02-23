@@ -1,0 +1,21 @@
+<h2>My Orders</h2>
+
+<% if @orders.any? %>
+
+  <% @orders.each do |order| %>
+    <div style="margin-bottom:20px;">
+      <strong>Order ID:</strong> <%= order.id %><br>
+      <strong>Date:</strong> <%= order.created_at.strftime("%d %B %Y") %><br>
+      <strong>Total:</strong> ₹ <%= order.total_amount %><br>
+      <strong>Status:</strong> <%= order.status.capitalize %><br>
+
+      <%= link_to "View Details", order_path(order) %>
+    </div>
+    <hr>
+  <% end %>
+
+<% else %>
+
+  <p>You have no orders yet.</p>
+
+<% end %>

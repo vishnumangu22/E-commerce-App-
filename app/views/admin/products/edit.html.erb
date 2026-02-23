@@ -1,0 +1,36 @@
+<h2>Edit Product</h2>
+
+<%= form_with model: [:admin, @product], local: true do |f| %>
+
+  <div>
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+
+  <div>
+    <%= f.label :description %><br>
+    <%= f.text_area :description %>
+  </div>
+
+  <div>
+    <%= f.label :price %><br>
+    <%= f.number_field :price, step: 0.01 %>
+  </div>
+
+  <div>
+    <%= f.label :stock %><br>
+    <%= f.number_field :stock %>
+  </div>
+
+  <div>
+    <%= f.label :image %><br>
+    <%= f.file_field :image %>
+  </div>
+
+  <br>
+  <%= f.submit "Update Product", class: "btn btn-success" %>
+
+<% end %>
+
+<br>
+<%= link_to "Back", admin_products_path %>
