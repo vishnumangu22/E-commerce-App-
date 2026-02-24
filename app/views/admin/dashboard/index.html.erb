@@ -1,6 +1,159 @@
-<h2>Admin Dashboard</h2>
+<div class="container mt-5">
 
-<ul>
-  <li><%= link_to "Manage Products", admin_products_path %></li>
-  <li><%= link_to "View Orders", admin_orders_path %></li>
-</ul>
+  <h2 class="mb-4 text-center">Admin Dashboard</h2>
+
+
+  <div class="row g-4 mb-5">
+
+    <div class="col-md-4">
+      <div class="card shadow-lg border-0 h-100 text-center">
+        <div class="card-body">
+          <h4 class="mb-3">📦 Manage Products</h4>
+          <p class="text-muted">
+            Add, edit, update, or remove products.
+          </p>
+          <%= link_to "Go to Products",
+                      admin_products_path,
+                      class: "btn btn-dark w-100" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-lg border-0 h-100 text-center">
+        <div class="card-body">
+          <h4 class="mb-3">🛒 View Orders</h4>
+          <p class="text-muted">
+            Monitor and update customer orders.
+          </p>
+          <%= link_to "Go to Orders",
+                      admin_orders_path,
+                      class: "btn btn-primary w-100" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-lg border-0 h-100 text-center">
+        <div class="card-body">
+          <h4 class="mb-3">👥 Manage Users</h4>
+          <p class="text-muted">
+            View and manage registered users.
+          </p>
+          <%= link_to "Go to Users",
+                      admin_users_path,
+                      class: "btn btn-success w-100" %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row">
+
+    <div class="col-md-3">
+      <div class="card text-white bg-success mb-3 shadow">
+        <div class="card-body text-center">
+          <h5>Total Revenue</h5>
+          <h3>Rs. <%= @total_revenue %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-primary mb-3 shadow">
+        <div class="card-body text-center">
+          <h5>Total Orders</h5>
+          <h3><%= @total_orders %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-dark mb-3 shadow">
+        <div class="card-body text-center">
+          <h5>Total Users</h5>
+          <h3><%= @total_users %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-warning mb-3 shadow">
+        <div class="card-body text-center">
+          <h5>Total Products</h5>
+          <h3><%= @total_products %></h3>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header bg-danger text-white">
+      Low Stock Products
+    </div>
+    <div class="card-body">
+      <% if @low_stock_products.any? %>
+        <ul>
+          <% @low_stock_products.each do |product| %>
+            <li>
+              <strong><%= product.name %></strong>
+              — Stock: <%= product.stock %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No low stock products.</p>
+      <% end %>
+    </div>
+  </div>
+
+
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      Recent Orders
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Total</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_orders.each do |order| %>
+            <tr>
+              <td><%= order.id %></td>
+              <td><%= order.user.name %></td>
+              <td>Rs. <%= order.total_amount %></td>
+              <td><%= order.created_at.strftime("%d %b %Y") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header bg-info text-white">
+      Recent Users
+    </div>
+    <div class="card-body">
+      <ul>
+        <% @recent_users.each do |user| %>
+          <li>
+            <%= user.name %> — <%= user.email %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+</div>

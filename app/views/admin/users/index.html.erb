@@ -1,0 +1,47 @@
+<div class="container mt-4">
+  <h2>Manage Users</h2>
+
+  <table class="table table-bordered table-striped mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Joined</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><%= user.name %></td>
+          <td><%= user.email %></td>
+          <td>
+            <% if user.admin? %>
+              <span class="badge bg-danger">Admin</span>
+            <% else %>
+              <span class="badge bg-secondary">Customer</span>
+            <% end %>
+          </td>
+          <td><%= user.created_at.strftime("%d %b %Y") %></td>
+          <td>
+            <%= link_to "View",
+                        admin_user_path(user),
+                        class: "btn btn-sm btn-primary" %>
+
+            <% unless user == current_user %>
+              <%= button_to "Delete",
+                            admin_user_path(user),
+                            method: :delete,
+                            data: { confirm: "Are you sure?" },
+                            class: "btn btn-sm btn-danger" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

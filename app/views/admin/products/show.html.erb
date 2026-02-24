@@ -22,22 +22,18 @@
 
 <% if !logged_in? %>
 
-  <!-- Guest -->
   <p>Please login to purchase this product.</p>
 
 <% elsif current_user.admin? %>
 
-  <!-- Admin -->
   <p><strong>Admins cannot purchase products.</strong></p>
 
 <% elsif @product.stock <= 0 %>
 
-  <!-- Out of Stock -->
   <p style="color:red;"><strong>Out of Stock</strong></p>
 
 <% else %>
 
-  <!-- Customer -->
   <%= button_to "Add to Cart",
                 cart_items_path(product_id: @product.id),
                 method: :post,

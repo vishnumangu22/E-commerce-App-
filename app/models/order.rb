@@ -7,4 +7,7 @@ class Order < ApplicationRecord
   def total_amount
     order_items.sum { |item| item.price * item.quantity }
   end
+  def grand_total
+    total_amount
+  end
 end

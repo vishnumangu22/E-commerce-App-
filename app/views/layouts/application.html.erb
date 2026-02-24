@@ -23,6 +23,10 @@
         </div>
       <% end %>
 
+    <% if current_user&.admin? && controller.class.module_parent == Admin %>
+      <%= render "admin/shared/navbar" %>
+    <% end %>
+
       <%= yield %>
     </div>
 

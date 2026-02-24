@@ -1,21 +1,53 @@
-<h2>My Orders</h2>
+<div class="container mt-4">
 
-<% if @orders.any? %>
+  <h2 class="mb-4">My Orders</h2>
 
-  <% @orders.each do |order| %>
-    <div style="margin-bottom:20px;">
-      <strong>Order ID:</strong> <%= order.id %><br>
-      <strong>Date:</strong> <%= order.created_at.strftime("%d %B %Y") %><br>
-      <strong>Total:</strong> ₹ <%= order.total_amount %><br>
-      <strong>Status:</strong> <%= order.status.capitalize %><br>
+  <% if @orders.any? %>
 
-      <%= link_to "View Details", order_path(order) %>
+    <% @orders.each do |order| %>
+
+      <% subtotal = order.order_items.sum { |i| i.price * i.quantity } %>
+      <% gst = (subtotal * 0.18).round(2) %>
+      <% grand_total = subtotal + gst %>
+
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+
+          <div class="row">
+            <div class="col-md-6">
+              <strong>Order ID:</strong> <%= order.id %><br>
+              <strong>Date:</strong> <%= order.created_at.strftime("%d %B %Y") %><br>
+              <strong>Status:</strong> <%= order.status.capitalize %>
+            </div>
+
+            <div class="col-md-6 text-md-end">
+              <p class="mb-1">
+                Subtotal: ₹ <%= subtotal %>
+              </p>
+              <p class="mb-1">
+                GST (18%): ₹ <%= gst %>
+              </p>
+              <p class="fw-bold fs-5">
+                Total Paid: ₹ <%= grand_total %>
+              </p>
+            </div>
+          </div>
+
+          <%= link_to "View Details",
+                      order_path(order),
+                      class: "btn btn-sm btn-primary mt-2" %>
+
+        </div>
+      </div>
+
+    <% end %>
+
+  <% else %>
+
+    <div class="alert alert-info">
+      You have no orders yet.
     </div>
-    <hr>
+
   <% end %>
 
-<% else %>
-
-  <p>You have no orders yet.</p>
-
-<% end %>
+</div>

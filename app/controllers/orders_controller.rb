@@ -1,14 +1,23 @@
 class OrdersController < ApplicationController
   before_action :ensure_customer
 
+  # ==============================
+  # List Orders
+  # ==============================
   def index
     @orders = current_user.orders.order(created_at: :desc)
   end
 
+  # ==============================
+  # Show Order
+  # ==============================
   def show
     @order = current_user.orders.find(params[:id])
   end
 
+  # ==============================
+  # Create Order (Checkout)
+  # ==============================
   def create
     cart = current_user.cart
 
@@ -18,17 +27,19 @@ class OrdersController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      # Calculate subtotal properly
-      subtotal = cart.cart_items.sum do |item|
-        item.product.price * item.quantity
-      end
+      # Calculate values BEFORE creating order
+      subtotal = cart.subtotal
+      gst = cart.gst
+      grand_total = cart.grand_total
 
       order = current_user.orders.create!(
-        total_amount: subtotal,
+        total_amount: grand_total,   # store final amount
         status: :pending
       )
 
       cart.cart_items.each do |item|
+        raise ActiveRecord::Rollback if item.quantity > item.product.stock
+
         order.order_items.create!(
           product: item.product,
           quantity: item.quantity,
@@ -47,43 +58,90 @@ class OrdersController < ApplicationController
   end
 
 
+  # ==============================
+  # Professional Invoice PDF
+  # ==============================
   def invoice
     @order = current_user.orders.find(params[:id])
 
-    pdf = Prawn::Document.new
+    pdf = Prawn::Document.new(page_size: "A4")
 
+    # ------------------------------
     # Header
-    pdf.text "ShopApp Invoice", size: 24, style: :bold
+    # ------------------------------
+    pdf.text "ShopApp", size: 28, style: :bold
+    pdf.move_down 5
+    pdf.text "INVOICE", size: 16, style: :bold
+    pdf.stroke_horizontal_rule
     pdf.move_down 20
 
-    pdf.text "Order ID: #{@order.id}"
+    # ------------------------------
+    # Invoice Details
+    # ------------------------------
+    pdf.text "Invoice No: ##{@order.id}"
     pdf.text "Date: #{@order.created_at.strftime('%d %B %Y')}"
-    pdf.text "Customer: #{current_user.name}"
+    pdf.move_down 10
+
+    pdf.text "Billed To:", style: :bold
+    pdf.text current_user.name
+    pdf.text current_user.email
     pdf.move_down 20
 
-    # Table Header
-    table_data = [ [ "Product", "Quantity", "Unit Price", "Subtotal" ] ]
+    # ------------------------------
+    # Table
+    # ------------------------------
+    table_data = [ [ "Product", "Qty", "Unit Price (Rs.)", "Subtotal (Rs.)" ] ]
+
+    subtotal = 0
 
     @order.order_items.each do |item|
-      subtotal = item.price * item.quantity
+      line_total = item.price * item.quantity
+      subtotal += line_total
 
       table_data << [
         item.product.name,
         item.quantity,
-        "Rs. #{item.price}",
-        "Rs. #{subtotal}"
+        item.price,
+        line_total
       ]
     end
 
-    pdf.table(table_data, header: true)
+    pdf.table(table_data, header: true, width: pdf.bounds.width) do
+      row(0).font_style = :bold
+      row(0).background_color = "EEEEEE"
+      cells.padding = 8
+    end
+
     pdf.move_down 20
 
-    pdf.text "Total Amount: Rs. #{@order.total_amount}",
+    # ------------------------------
+    # Totals Section
+    # ------------------------------
+    gst = (subtotal * 0.18).round(2)
+    grand_total = subtotal + gst
+
+    pdf.text "Subtotal: Rs. #{subtotal}", align: :right
+    pdf.text "GST (18%): Rs. #{gst}", align: :right
+    pdf.stroke_horizontal_rule
+    pdf.move_down 5
+    pdf.text "Grand Total: Rs. #{grand_total}",
              size: 16,
-             style: :bold
+             style: :bold,
+             align: :right
+
+    pdf.move_down 30
+
+    # ------------------------------
+    # Footer
+    # ------------------------------
+    pdf.stroke_horizontal_rule
+    pdf.move_down 10
+    pdf.text "Thank you for shopping with ShopApp!",
+             size: 10,
+             align: :center
 
     send_data pdf.render,
-              filename: "invoice_order_#{@order.id}.pdf",
+              filename: "invoice_#{@order.id}.pdf",
               type: "application/pdf",
               disposition: "inline"
   end
@@ -91,8 +149,10 @@ class OrdersController < ApplicationController
   private
 
   def ensure_customer
-    redirect_to root_path,
-                alert: "Admins cannot place orders",
-                status: :see_other if current_user.admin?
+    if current_user.admin?
+      redirect_to root_path,
+                  alert: "Admins cannot place orders",
+                  status: :see_other
+    end
   end
 end

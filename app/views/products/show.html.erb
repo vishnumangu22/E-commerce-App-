@@ -6,8 +6,6 @@
       <h2 class="mb-3"><%= @product.name %></h2>
 
       <div class="row">
-
-        <!-- Product Image -->
         <div class="col-md-5 text-center">
           <% if @product.image.attached? %>
             <%= image_tag @product.image,
@@ -19,8 +17,6 @@
             </div>
           <% end %>
         </div>
-
-        <!-- Product Details -->
         <div class="col-md-7">
 
           <p class="mb-2">
@@ -46,8 +42,6 @@
           </p>
 
           <hr>
-
-          <!-- Purchase / Wishlist Logic -->
           <% if !logged_in? %>
 
             <div class="alert alert-info">
@@ -72,8 +66,6 @@
                 Out of Stock
               </div>
             <% end %>
-
-            <!-- Wishlist Toggle -->
             <% wishlist_item = current_user.wishlists.find_by(product_id: @product.id) %>
 
             <% if wishlist_item %>

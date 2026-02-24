@@ -1,20 +1,101 @@
-<h2>Order Details</h2>
+<div class="container mt-5">
 
-<p><strong>Order ID:</strong> <%= @order.id %></p>
-<p><strong>User:</strong> <%= @order.user.name %></p>
-<p><strong>Status:</strong> <%= @order.status.capitalize %></p>
-<p><strong>Total:</strong> ₹ <%= @order.total_amount %></p>
+  <div class="card shadow-sm">
+    <div class="card-body">
 
-<hr>
+      <h2 class="mb-4">Order Details</h2>
 
-<% @order.order_items.each do |item| %>
-  <div>
-    <strong><%= item.product.name %></strong><br>
-    Quantity: <%= item.quantity %><br>
-    Price: ₹ <%= item.price %><br>
-    Subtotal: ₹ <%= item.price * item.quantity %>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <p><strong>Order ID:</strong> <%= @order.id %></p>
+          <p><strong>Customer:</strong> <%= @order.user.name %></p>
+          <p><strong>Email:</strong> <%= @order.user.email %></p>
+        </div>
+
+        <div class="col-md-6 text-md-end">
+          <p>
+            <strong>Status:</strong>
+            <span class="badge bg-primary">
+              <%= @order.status.capitalize %>
+            </span>
+          </p>
+          <p>
+            <strong>Date:</strong>
+            <%= @order.created_at.strftime("%d %B %Y") %>
+          </p>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- ======================= -->
+      <!-- Order Items Table -->
+      <!-- ======================= -->
+
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Product</th>
+            <th class="text-center">Quantity</th>
+            <th class="text-end">Unit Price (₹)</th>
+            <th class="text-end">Subtotal (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <% subtotal = 0 %>
+
+          <% @order.order_items.each do |item| %>
+            <% line_total = item.price * item.quantity %>
+            <% subtotal += line_total %>
+
+            <tr>
+              <td><%= item.product.name %></td>
+              <td class="text-center"><%= item.quantity %></td>
+              <td class="text-end">₹ <%= item.price %></td>
+              <td class="text-end">₹ <%= line_total %></td>
+            </tr>
+          <% end %>
+
+        </tbody>
+      </table>
+
+      <!-- ======================= -->
+      <!-- Totals Section -->
+      <!-- ======================= -->
+
+      <% gst = (subtotal * 0.18).round(2) %>
+
+      <div class="row justify-content-end">
+        <div class="col-md-4">
+
+          <div class="d-flex justify-content-between">
+            <span>Subtotal:</span>
+            <span>₹ <%= subtotal %></span>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <span>GST (18%):</span>
+            <span>₹ <%= gst %></span>
+          </div>
+
+          <hr>
+
+          <div class="d-flex justify-content-between fw-bold fs-5">
+            <span>Total Paid:</span>
+            <span>₹ <%= @order.total_amount %></span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <%= link_to "Back to Orders",
+                    admin_orders_path,
+                    class: "btn btn-secondary" %>
+      </div>
+
+    </div>
   </div>
-  <hr>
-<% end %>
 
-<%= link_to "Back", admin_orders_path %>
+</div>

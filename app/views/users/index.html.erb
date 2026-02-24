@@ -1,0 +1,50 @@
+<div class="container mt-5">
+
+  <h2 class="mb-4 text-center">Users</h2>
+
+  <% if @users.present? %>
+
+    <div class="row">
+
+      <% @users.each do |user| %>
+        <div class="col-md-4 mb-4">
+
+          <div class="card shadow-sm">
+            <div class="card-body">
+
+              <h5 class="card-title">
+                <%= user.name %>
+              </h5>
+
+              <p class="text-muted">
+                <%= user.email %>
+              </p>
+
+              <p>
+                Joined on:
+                <%= user.created_at.strftime("%d %b %Y") %>
+              </p>
+
+              <% if logged_in? && user == current_user %>
+                <span class="badge bg-success">
+                  You
+                </span>
+              <% end %>
+
+            </div>
+          </div>
+
+        </div>
+      <% end %>
+
+    </div>
+
+  <% else %>
+
+    <div class="alert alert-info text-center">
+      No users found.
+    </div>
+
+  <% end %>
+
+</div>

@@ -1,36 +1,104 @@
-<h2>Products</h2>
+<div class="container mt-5">
 
-<!-- Category Filter -->
-<div style="margin-bottom:20px;">
-  <%= form_with url: root_path, method: :get, local: true do %>
-    <%= select_tag :category_id,
-                   options_from_collection_for_select(Category.all,
-                                                     :id,
-                                                     :name,
-                                                     params[:category_id]),
-                   prompt: "Filter by Category",
-                   onchange: "this.form.submit();" %>
-  <% end %>
-</div>
+  <h2 class="mb-4 text-center">Our Products</h2>
 
-<hr>
+  <div class="row mb-4">
+    <div class="col-md-4">
 
-<% @products.each do |product| %>
-  <div style="margin-bottom:20px;">
+      <%= form_with url: root_path, method: :get, local: true do %>
 
-    <h3>
-      <%= link_to product.name, product_path(product) %>
-    </h3>
+        <%= select_tag :category_id,
+              options_from_collection_for_select(@categories || [],
+                                                  :id,
+                                                  :name,
+                                                  params[:category_id]),
+              include_blank: "All Categories",
+              class: "form-select",
+              onchange: "this.form.submit();" %>
 
-    <p><%= product.description %></p>
+      <% end %>
 
-    <p>
-      <strong>Category:</strong>
-      <%= product.category&.name || "Not Assigned" %>
-    </p>
+    </div>
+  </div>
 
-    <p><strong>Price:</strong> ₹ <%= product.price %></p>
+
+  <div class="row">
+
+    <% @products.each do |product| %>
+      <div class="col-md-4 mb-4">
+
+        <div class="card h-100 shadow-sm">
+
+          <div class="card-body d-flex flex-column">
+
+            <h5 class="card-title">
+              <%= product.name %>
+            </h5>
+
+            <% if product.category.present? %>
+              <p class="text-muted mb-1">
+                <small>Category: <%= product.category.name %></small>
+              </p>
+            <% end %>
+
+            <p class="fw-bold fs-5">
+              ₹ <%= product.price %>
+            </p>
+
+            <% if product.stock > 0 %>
+              <span class="badge bg-success mb-2">
+                In Stock
+              </span>
+            <% else %>
+              <span class="badge bg-danger mb-2">
+                Out of Stock
+              </span>
+            <% end %>
+
+            <div class="mt-auto">
+
+
+              <%= link_to "View",
+                          product_path(product),
+                          class: "btn btn-outline-dark w-100 mb-2" %>
+
+              <% if logged_in? && !current_user.admin? %>
+
+                <% if product.stock > 0 %>
+                  <%= button_to "Add to Cart",
+                                cart_items_path(product_id: product.id),
+                                method: :post,
+                                class: "btn btn-primary w-100 mb-2" %>
+                <% end %>
+
+                <% if @wishlist_product_ids.include?(product.id) %>
+
+                  <% wishlist_item = current_user.wishlists.find_by(product_id: product.id) %>
+
+                  <%= button_to "💔 Remove from Wishlist",
+                                wishlist_path(wishlist_item),
+                                method: :delete,
+                                class: "btn btn-danger w-100" %>
+
+                <% else %>
+
+                  <%= button_to "❤️ Add to Wishlist",
+                                wishlists_path(product_id: product.id),
+                                method: :post,
+                                class: "btn btn-outline-danger w-100" %>
+
+                <% end %>
+
+              <% end %>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    <% end %>
 
   </div>
-  <hr>
-<% end %>
+
+</div>

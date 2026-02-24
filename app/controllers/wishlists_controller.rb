@@ -8,18 +8,20 @@ class WishlistsController < ApplicationController
 
   def create
     product = Product.find(params[:product_id])
-    current_user.wishlists.create(product: product)
+
+    unless current_user.wishlists.exists?(product_id: product.id)
+      current_user.wishlists.create(product: product)
+    end
 
     redirect_back fallback_location: root_path,
                   notice: "Added to wishlist"
   end
-
   def destroy
     wishlist = current_user.wishlists.find(params[:id])
     wishlist.destroy
 
-    redirect_to wishlists_path,
-                notice: "Removed from wishlist"
+    redirect_back fallback_location: root_path,
+                  notice: "Removed from wishlist"
   end
 
   private

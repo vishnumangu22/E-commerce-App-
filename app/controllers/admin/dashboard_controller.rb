@@ -3,14 +3,15 @@ module Admin
     before_action :require_admin
 
     def index
-    end
+      @total_revenue = Order.sum(:total_amount)
+      @total_orders  = Order.count
+      @total_users   = User.count
+      @total_products = Product.count
 
-    private
+      @low_stock_products = Product.where("stock <= ?", 5)
 
-    def require_admin
-      unless current_user.admin?
-        redirect_to root_path, alert: "Access denied"
-      end
+      @recent_orders = Order.order(created_at: :desc).limit(5)
+      @recent_users  = User.order(created_at: :desc).limit(5)
     end
   end
 end

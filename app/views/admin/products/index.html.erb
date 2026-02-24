@@ -23,8 +23,6 @@
         <tbody>
           <% @products.each do |product| %>
             <tr>
-
-              <!-- Image Thumbnail -->
               <td>
                 <% if product.image.attached? %>
                   <%= image_tag product.image,
@@ -35,13 +33,10 @@
                 <% end %>
               </td>
 
-              <!-- Name -->
               <td><strong><%= product.name %></strong></td>
 
-              <!-- Price -->
               <td>₹ <%= product.price %></td>
 
-              <!-- Stock -->
               <td>
                 <% if product.stock > 0 %>
                   <span class="badge bg-success">
@@ -54,7 +49,6 @@
                 <% end %>
               </td>
 
-              <!-- Actions -->
               <td>
                 <%= link_to "Edit",
                             edit_admin_product_path(product),
